@@ -1,0 +1,9 @@
+<metal:block use-macro="load: amnesia:templates/document/show.pt">
+    <metal:block fill-slot="top" tal:define="settings request.registry.settings">
+        <div class="row">
+            <div class="col-md-12">
+                ${structure: widgets.Tabs(request, int(settings['bees_root_id']))}
+            </div>
+        </div>
+    </metal:block>
+</metal:block>
