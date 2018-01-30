@@ -16,7 +16,7 @@
     <div class="text-box">
         <h3><a href="${request.resource_path(content)}">${content.title}</a></h3>
         <div class="tags-row">
-            <a href="#" class="link"><i class="fa fa-clock-o" aria-hidden="true"></i>${h.event_date(request, content)}</a> <a href="#" class="link"><i class="fa fa-map-marker" aria-hidden="true"></i>${content.location} ${content.address}</a>
+            <a href="#" class="link"><i class="fa fa-clock-o" aria-hidden="true"></i>${h.pretty_date(request, content)}</a> <a href="#" class="link"><i class="fa fa-map-marker" aria-hidden="true"></i>${content.location} ${content.address}</a>
         </div>
         <a href="${request.resource_path(content)}" class="btn-readmore">Event Details</a>
     </div>

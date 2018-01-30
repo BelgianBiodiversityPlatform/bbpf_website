@@ -5,7 +5,7 @@ import logging
 from pyramid.config import Configurator
 from amnesia.resources import get_root
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 def main(global_config, **settings):
