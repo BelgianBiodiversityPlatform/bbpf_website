@@ -1,0 +1,6 @@
+<div tal:repeat="person data.get('people', ())" class="registry">
+    <div class="gravatar">
+        <a href="${'{}/registry/person/{}'.format(request.script_name, person['id'])}"><img src="${h.gravatar(request, person['email'], 48)}" /></a>
+    </div>
+    <div class="person">${person['firstname']} ${person['familyname']}</div>
+</div>

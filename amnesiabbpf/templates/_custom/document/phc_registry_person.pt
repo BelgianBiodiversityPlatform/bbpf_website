@@ -1,0 +1,47 @@
+<metal:block use-macro="load: amnesia:templates/layout.pt">
+<metal:block fill-slot="title_more">: Registry</metal:block>
+    <div metal:fill-slot="content" id="main" tal:define="person person['person']">
+        <img src="${h.gravatar(request, person['email'], 128)}" class="gravatar right" style="margin:30px" />
+
+        <h1 style="margin-bottom:5px;">${person['firstname']} ${person['familyname']}</h1>
+        <p class="justify italic" style="font-size: 14px; padding: 10px;">${person['activity']}</p>
+
+        <ul class="nospace academics">
+            <li tal:condition="person['researchgateid']">
+                <a href="${person['researchgateid']}"><i class="ai ai-researchgate-square fa-2x"></i> ResearchGate</a>
+            </li>
+            <li tal:condition="person['orcid']">
+                <a href="${person['orcid']}"><i class="ai ai-orcid-square fa-2x"></i> OrcID</a>
+            </li>
+            <li>
+                <a href="mailto:${person['email']}"><i class="fa fa-envelope fa-2x"></i>E-Mail</a>
+            </li>
+        </ul>
+
+        <div tal:condition="person['orgunits']">
+            <h2>Affiliation</h2>
+            <ul>
+                <li tal:repeat="orgunit person['orgunits']">
+                    <p>${orgunit['name']}</p>
+                    <p>${orgunit['addrline1']}</p>
+                    <p>${orgunit['addrline2']}</p>
+                    <p>${orgunit['addrline3']}</p>
+                    <p>${orgunit['country']}</p>
+                </li>
+            </ul>
+        </div>
+
+        <div tal:condition="classifications">
+            <h2>Expertise</h2>
+            <p tal:repeat="(sc, cl) classifications">
+                <span class="bold">${sc}</span>
+                <ul>
+                    <li tal:repeat="cll cl">
+                        <a href="${'{}/registry/cl/{}'.format(request.script_name, cll['id'])}">${cll['term']}</a>
+                    </li>
+                </ul>
+            </p>
+        </div>
+
+    </div>
+</metal:block>
