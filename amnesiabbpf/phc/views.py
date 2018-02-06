@@ -9,8 +9,10 @@ from urllib.parse import urljoin
 from urllib.request import urlopen
 
 from pyramid.view import view_config
+from pyramid.view import view_defaults
 
 from amnesia.views import BaseView
+from amnesiabbpf.phc import PHCResource
 
 
 log = logging.getLogger(__name__)
@@ -23,40 +25,35 @@ def includeme(config):
 
 class PHCRegistry(BaseView):
 
-    @property
-    def source_id(self):
-        return self.request.registry.settings['phc_registry_source_id']
-
-    @property
-    def registry_url(self):
-        return self.request.registry.settings['phc_registry_url']
-
-    @view_config(request_method='GET',
-                 name='phc_registry_schemes', renderer='json')
+    @view_config(request_method='GET', name='schemes', context=PHCResource,
+                 renderer='json')
     def schemes(self):
-        params = urlencode({'source_id': self.source_id})
-        url = urljoin(self.registry_url, 'schemes.json?{}'.format(params))
+        params = urlencode({'source_id': self.context.source_id})
+        url = urljoin(self.context.registry_url,
+                      'schemes.json?{}'.format(params))
         response = json.loads(urlopen(url).read().decode('utf-8'))
         return response
 
-    @view_config(request_method='GET', name='phc_registry_people',
-                 renderer='amnesiabbpf:templates/_custom/document/phc_registry_list.pt')
+    @view_config(request_method='GET', name='people', context=PHCResource,
+                 renderer='amnesiabbpf:phc/templates/phc_registry_list.pt')
     def people(self):
         params = urlencode({
-            'source': self.source_id,
+            'source': self.context.source_id,
             'skills[]': self.request.GET.getall('class_ids')  # needed for Rails
         }, doseq=True)
 
-        url = urljoin(self.registry_url, 'people/listExperts.json?{}'.format(params))
+        url = urljoin(self.context.registry_url,
+                      'people/listExperts.json?{}'.format(params))
         response = json.loads(urlopen(url).read().decode('utf-8'))
 
         return {'data': response}
 
-    @view_config(request_method='GET', name='phc_registry_person',
-                 renderer='amnesiabbpf:templates/_custom/document/phc_registry_person.pt')
+    @view_config(request_method='GET', name='person', context=PHCResource,
+                 renderer='amnesiabbpf:phc/templates/phc_registry_person.pt')
     def person(self):
         person_id = self.request.GET.get('id')
-        url = urljoin(self.registry_url, 'people/{}.json'.format(person_id))
+        url = urljoin(self.context.registry_url,
+                      'people/{}.json'.format(person_id))
         person = json.loads(urlopen(url).read().decode('utf-8'))
 
         classifications = sorted(person['person']['classifications'],
@@ -68,11 +65,12 @@ class PHCRegistry(BaseView):
 
         return {'person': person, 'classifications': classifications}
 
-    @view_config(request_method='GET', name='phc_cl',
-                 renderer='amnesiabbpf:templates/_custom/document/phc_registry_cl.pt')
+    @view_config(request_method='GET', name='phc_cl', context=PHCResource,
+                 renderer='amnesiabbpf:phc/templates/phc_registry_cl.pt')
     def cl(self):
         person_id = self.request.GET.get('id')
-        url = urljoin(self.registry_url, 'classifications/{}.json'.format(person_id))
+        url = urljoin(self.context.registry_url,
+                      'classifications/{}.json'.format(person_id))
         classifications = json.loads(urlopen(url).read().decode('utf-8'))
 
         return {'cl': classifications}
