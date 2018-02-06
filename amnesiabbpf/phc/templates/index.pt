@@ -1,0 +1,259 @@
+<metal:block use-macro="load: amnesia:templates/layout.pt">
+<metal:block fill-slot="title_more">: Registry</metal:block>
+<metal:block fill-slot="head-bottom">
+    <script type="text/javascript">
+        /* <![CDATA[ */
+        function get_list(p) {
+            var p = p === undefined ? {} : p,
+                class_ids = p.class_ids || [] ;
+
+            // Fetch the species list from server through an Ajax request.
+            Yeti.AjaxRequest("${request.resource_path(context, 'people')}", {
+                data: {
+                    class_ids: class_ids
+                },
+                onreadystatechange: function(req) {
+                    if (req.success()) {
+                        Yeti.Element('list_people').innerHTML=req.o.responseText;
+                    }
+                }
+
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            var hierarchy = null,
+                select_schemes = document.getElementById('schemes'),
+                select_classifications = document.getElementById('classifications'),
+                select_subclass = document.getElementById('subclass'),
+                selection = [],
+                selection_ul = document.getElementById('selection'),
+                selection_container = document.getElementById('selection_container');
+
+            select_schemes.addEventListener('change', build_classifications);
+            select_classifications.addEventListener('change', build_subclass);
+
+            function clear_select(elem) {
+                elem.disabled = true;
+                
+                while(elem.hasChildNodes()) {
+                    elem.removeChild(elem.lastChild);
+                }
+
+                return elem;
+            }
+
+            function show_or_hide(select) {
+                if (select.options.length) {
+                    select.disabled = false;
+                    select.style.display = '';
+                } else {
+                    select.disabled = true;
+                    select.style.display = 'none';
+                }
+            }
+
+            function build_schemes() {
+                clear_select(select_schemes);
+
+                var opt = document.createElement('option');
+                opt.appendChild(document.createTextNode('...'));
+                select_schemes.appendChild(opt);
+
+                hierarchy.forEach(function(cl) {
+                    var opt = document.createElement('option');
+                    opt.value = cl.id;
+                    opt.appendChild(document.createTextNode(cl.description));
+                    opt.setAttribute('data-txt', cl.description);
+
+                    select_schemes.appendChild(opt);
+                });
+
+                select_schemes.disabled = false;
+            }
+
+            function build_classifications(e) {
+                var selected_scheme = e.target.value;
+
+                clear_select(select_classifications);
+                show_or_hide(clear_select(select_subclass));
+
+                var opt = document.createElement('option');
+                opt.appendChild(document.createTextNode('...'));
+                select_classifications.appendChild(opt);
+
+                hierarchy.forEach(function(level1) {
+                    if (level1.id == selected_scheme) {
+                        level1.children.forEach(function(level2) {
+                            var opt = document.createElement('option');
+                            opt.value = level2.id;
+                            opt.appendChild(document.createTextNode(level2.term));
+                            opt.setAttribute('data-txt', level2.term);
+
+                            select_classifications.appendChild(opt);
+                        });
+                    }
+                });
+
+                show_or_hide(select_classifications);
+            }
+
+            function build_subclass(e) {
+                var selected_classification = e.target.value;
+
+                clear_select(select_subclass);
+
+                hierarchy.forEach(function(level1) {
+                    if (level1.id == select_schemes.value) {
+                        level1.children.forEach(function(level2) {
+                            if (level2.id == select_classifications.value) {
+                                level2.children.forEach(function(level3) {
+                                    var opt = document.createElement('option');
+                                    opt.value = level3.id;
+                                    opt.appendChild(document.createTextNode(level3.term));
+                                    opt.setAttribute('data-txt', level3.term);
+
+                                    select_subclass.appendChild(opt);
+                                })
+                            }
+                        })
+                    }
+                });
+
+                show_or_hide(select_subclass);
+            }
+
+            // Get data
+            Yeti.AjaxRequest("${request.resource_path(context, 'schemes')}", {
+                onreadystatechange: function(req) {
+                    if (req.success()) {
+                        var response = JSON.parse(req.o.responseText);
+                        hierarchy = response.schemes;
+                        build_schemes();
+                    }
+                }
+            });
+
+            document.getElementById('add').addEventListener('click', function(e) {
+                var scheme = select_schemes.options[select_schemes.selectedIndex],
+                    classi = select_classifications.options[select_classifications.selectedIndex],
+                    subclass = select_subclass.options[select_subclass.selectedIndex],
+                    selected_id = null;
+
+                var li = document.createElement('li');
+
+                if (scheme && scheme.value) {
+                    selected_id = scheme.value;
+                    li.appendChild(document.createTextNode(scheme.getAttribute('data-txt')));
+                }
+
+                if (classi && classi.value) {
+                    selected_id = classi.value;
+                    li.appendChild(document.createTextNode(' -> ' + classi.getAttribute('data-txt')));
+                }
+
+                if (subclass && subclass.value) {
+                    selected_id = subclass.value;
+                    li.appendChild(document.createTextNode(' -> ' + subclass.getAttribute('data-txt')));
+                }
+
+                if (selected_id && selection.indexOf(selected_id) == -1) {
+                    selection.push(selected_id);
+                    get_list({ class_ids: selection });
+
+                    var remove = document.createElement('a')
+                        remove_img = document.createElement('i');
+                    
+                    remove.href = '#';
+                    remove_img.className = "fa fa-times";
+                    remove_img.style = "margin-left: 10px;"
+                    remove.appendChild(remove_img);
+
+                    remove.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        remove.parentNode.parentNode.removeChild(li);
+                        selection.splice(selection.indexOf(classi.value), 1);
+                        selection_container.style.display = selection.length == 0 ? 'none' : '';
+                        get_list({ class_ids: selection });
+                    });
+
+                    li.appendChild(remove);
+                    selection_ul.appendChild(li);
+                    selection_container.style.display = '';
+                }
+            });
+
+            document.getElementById('remove_all_filters').addEventListener('click', function(e) {
+                selection = [];
+                selection_container.style.display = 'none';
+
+                while(selection_ul.hasChildNodes()) {
+                    selection_ul.removeChild(selection_ul.lastChild);
+                }
+
+                get_list({ class_ids: selection});
+            });
+
+            get_list();
+        }, false);
+
+        /* ]]> */
+        
+    </script>
+</metal:block> <!-- HEAD-BOTTOM -->
+<metal:block fill-slot="content">
+    <div id="main">
+        <div class="container">
+            <div class="row">
+
+                <!--
+                <ul>
+                    <li><a href="https://docs.google.com/forms/d/12vUj2BwXQjlsAu08PaZm8kgTl5z6bJLoeKg-GjlkgSo/viewform"><button><i class="fa fa-external-link-square"> Register as an expert</i></button></a></li>
+                    <li><a href="https://docs.google.com/forms/d/1tJMVjOerfDEKfPaRNYnPtqxbDKCsKluwKFcovKh2u4M/viewform"><button><i class="fa fa-external-link-square"> S'enregistrer comme expert</i></button></a></li>
+                    <li><a href="https://docs.google.com/forms/d/1BmJtq75OuBnJLa0cSqEMUBiMYSifS5qAErJUJ6X4RwM/viewform"><button><i class="fa fa-external-link-square"> Schrijf u in als een expert</i></button></a></li>
+                </ul>
+                -->
+
+                <h1>Expert registry</h1>
+
+                <p>This registry allows to keep track of the expert community active on nature &amp; health related issues (including e.g. One Health, EcoHealth, Biodiversity &amp; Health, Environmental Health, Nature Based Health Solutions) both within the Belgian and the European expert community of practice.</p>
+
+                <p class="bold clear">
+                Looking for experts? Just add filters of interest hereunder by clicking on the <i class="fa fa-plus-circle"></i> icon. Please note that filters are mutually inclusive.
+                </p>
+
+                <div class="row bg-success" style="padding:10px">
+                    <div class="col-md-3">
+                        <select id="schemes" class="form-control"></select>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <select id="classifications" class="form-control" style="display:none"></select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <select id="subclass" class="form-control" style="display:none"></select>
+                    </div>
+
+                    <button id="add" class="btn btn-default" type="submit">
+                        <i class="fa fa-plus-circle"></i>
+                    </button>
+                </div>
+
+                <div id="selection_container" style="display:none">
+                    <p class="italic">click on the red cross (<i class="fa fa-times"></i>) to remove a specific filter</p>
+                    <p class="bold">Active filters:</p>
+                    <ul id="selection"></ul>
+                    <p><button id="remove_all_filters">Remove all filters</button></p>
+                </div>
+
+            </div> <!-- row -->
+        </div> <!-- container -->
+        <div id="list_people" class="container">
+            <i>Loading, please wait ...</i>
+        </div>
+    </div> <!-- main -->
+</metal:block> <!-- CONTENT -->
+</metal:block>
+
