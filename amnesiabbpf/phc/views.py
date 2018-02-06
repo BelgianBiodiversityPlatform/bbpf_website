@@ -32,6 +32,7 @@ class PHCRegistry(BaseView):
         url = urljoin(self.context.registry_url,
                       'schemes.json?{}'.format(params))
         response = json.loads(urlopen(url).read().decode('utf-8'))
+
         return response
 
     @view_config(request_method='GET', name='people',
@@ -75,12 +76,12 @@ class PHCRegistry(BaseView):
 
         return {'cl': classifications}
 
-#
-#
-#
-#class RegistryController(object):
-#
-#    def index(self):
-#        filters = { 'source_id': source_id() }
-#        schemes = requests.get(registry_url() + '/schemes.json', params=filters).json()
-#        return render('registry/index.html', schemes=schemes)
+    @view_config(request_method='GET', name='',
+                 renderer='amnesiabbpf:phc/templates/index.pt')
+    def index(self):
+        params = urlencode({'source_id': self.context.source_id})
+        url = urljoin(self.context.registry_url,
+                      'schemes.json?{}'.format(params))
+        response = json.loads(urlopen(url).read().decode('utf-8'))
+
+        return {'schemes': response}

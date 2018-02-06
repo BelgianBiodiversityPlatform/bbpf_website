@@ -1,6 +1,6 @@
-<div tal:repeat="person data.get('people', ())" class="registry">
-    <div class="gravatar">
-        <a href="${request.resource_path(context, 'person', query={'id':person['id']})}"><img src="${h.gravatar(request, person['email'], 48)}" /></a>
-    </div>
-    <div class="person">${person['firstname']} ${person['familyname']}</div>
+<div class="row">
+<div tal:repeat="person data.get('people', ())" class="col-xs-4 col-md-2">
+    <a href="${request.resource_path(context, 'person', query={'id':person['id']})}"><img src="${h.gravatar(request, person['email'], 64)}" class="img-circle" /></a>
+    <div>${person['firstname']} ${person['familyname']}</div>
+</div>
 </div>
