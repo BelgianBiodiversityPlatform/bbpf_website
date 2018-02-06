@@ -37,7 +37,7 @@
                 <span class="bold">${sc}</span>
                 <ul>
                     <li tal:repeat="cll cl">
-                        <a href="${'{}/registry/cl/{}'.format(request.script_name, cll['id'])}">${cll['term']}</a>
+                        <a href="${request.resource_path(context, 'cl', query={'id': cll['id']})}">${cll['term']}</a>
                     </li>
                 </ul>
             </p>

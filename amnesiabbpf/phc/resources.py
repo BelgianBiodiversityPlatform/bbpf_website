@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 class PHCResource(Resource):
 
-    __name__ = 'phc'
+    __name__ = 'health'
 
     def __init__(self, request, parent=None):
         super().__init__(request)

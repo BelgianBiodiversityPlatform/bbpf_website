@@ -4,22 +4,21 @@ import logging
 
 from pyramid.config import Configurator
 from amnesia.resources import Resource
+from amnesia.resources import Root
 from amnesia.resources import get_root
 from amnesiabbpf.phc import PHCResource
 
 log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-class BBPFRoot(Resource):
-
-    __name__ = ''
-    __parent__ = None
+class BBPFRoot(Root):
 
     def __getitem__(self, path):
+        # Public health
         if path == 'health':
             return PHCResource(self.request, self)
 
-        return get_root(self.request)
+        return super().__getitem__(path)
 
 def bbpf_root(request):
     return BBPFRoot(request)

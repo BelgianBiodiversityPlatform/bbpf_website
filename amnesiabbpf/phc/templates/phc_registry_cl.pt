@@ -1,18 +1,23 @@
 <metal:block use-macro="load: amnesia:templates/layout.pt">
-    <div metal:fill-slot="content" id="main" tal:define="cl cl['classpeople']">
+<metal:block fill-slot="content" tal:define="cl cl['classpeople']">
+    <div id="main">
+    <div class="container">
+        <div class="row">
         <h1>${cl.term}</h1>
         
         <h2>People</h2>
         <p>People with <strong>${cl.term}</strong> expertise</p>
-        <div tal:repeat="person cl['experts']" class="registry">
-            <div class="gravatar">
+        <div tal:repeat="person cl['experts']">
+            <div>
                 <a href="${'{}/registry/person/{}'.format(request.script_name, person['id'])}"><img src="${h.gravatar(request, person['email'], 96)}" /></a>
             </div>
-            <div class="links">
-                <div class="person">${person['firstname']} ${person['familyname']}</div>
+            <div>
+                <div>${person['firstname']} ${person['familyname']}</div>
             </div>
         </div>
-
+        </div>
     </div>
+    </div>
+</metal:block>
 </metal:block>
 
