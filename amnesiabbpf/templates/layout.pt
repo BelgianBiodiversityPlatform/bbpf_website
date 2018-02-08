@@ -1,6 +1,6 @@
 <metal:block define-macro="page" tal:define="json import: json; content content|None; nav_content nav_content|content">
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">

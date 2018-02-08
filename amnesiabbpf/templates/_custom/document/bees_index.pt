@@ -2,22 +2,32 @@
     <metal:block fill-slot="body" tal:define="settings request.registry.settings">
         <div class="row">
             <div class="col-md-12">
-                ${structure: widgets.Tabs(request, int(settings['bees_root_id']))}
+                ${structure: widgets.tabs(request, int(settings['bees_root_id']))}
+            </div>
+        </div>
+        <div class="row">
+            <p>
+The BElgian Ecosystems and Society community (BEES) is a growing and active informal network of Belgian ecosystem services experts. The BEES-community is facilitated by the Belgian Biodiversity Platform. It contributes to improve ecosystem-society interactions by facilitating collaboration, coordination and communication among and between scientists, administrators, policy makers and practitioners in Belgium.
+            </p>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                ${structure: widgets.box_row(request, int(settings['bees_box_row_id']))}
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                ${structure: widgets.BoxRow(request, int(settings['bees_box_row_id']))}
+                ${structure: widgets.slider2(request, int(settings['bees_slider2_id']))}
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
-                ${structure: widgets.Slider1(request, int(settings['bees_slider1_id']))}
-            </div>
+            <p>
+            BEES promotes the inclusion of the diverse values of nature across sectors and policies. We provide opportunities to discuss, review and develop concepts, tools and practices dealing with the challenges faced by society in using, interacting or managing ecosystems. We organise events to facilitate capacity building, exchange of expertise and best practices on ecosystem-society challenges. We ensure representation, enable involvement and increase visibility of Belgian initiatives in the international context. We share information needs from policy makers to stakeholders and provides overviews of knowledge and best practices to policy.
+            </p>
         </div>
         <div class="row">
             <div class="col-md-12">
-                ${structure: widgets.Slider2(request, int(settings['bees_slider2_id']))}
+                ${structure: widgets.slider1(request, int(settings['bees_slider1_id']))}
             </div>
         </div>
     </metal:block>
