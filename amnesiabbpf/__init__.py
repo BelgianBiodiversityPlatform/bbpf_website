@@ -6,17 +6,26 @@ from pyramid.config import Configurator
 from amnesia.resources import Resource
 from amnesia.resources import Root
 from amnesia.resources import get_root
+from amnesia.modules.folder import Folder
 from amnesiabbpf.phc import PHCResource
+from amnesiabbpf.phc import PHCResourceMixin
+from amnesiabbpf.phc import PHCRegistryResource
 
 log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-class BBPFRoot(Root):
+class BBPFRoot(Root, PHCResourceMixin):
+
 
     def __getitem__(self, path):
         # Public health
-        if path == 'health':
-            return PHCResource(self.request, self)
+        if path == self.phc_root_id:
+            phc_folder = self.dbsession.query(Folder).get(self.phc_root_id)
+            return PHCResource(self.request, phc_folder, self)
+
+        # Public health registry
+        if path == self.phc_registry_id:
+            return PHCRegistryResource(self.request, self)
 
         return super().__getitem__(path)
 

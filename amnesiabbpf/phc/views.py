@@ -13,6 +13,7 @@ from pyramid.view import view_defaults
 
 from amnesia.views import BaseView
 from amnesiabbpf.phc import PHCResource
+from amnesiabbpf.phc import PHCRegistryResource
 
 
 log = logging.getLogger(__name__)
@@ -23,7 +24,7 @@ def includeme(config):
     config.scan(__name__)
 
 
-@view_defaults(context=PHCResource)
+@view_defaults(context=PHCRegistryResource)
 class PHCRegistry(BaseView):
 
     @view_config(request_method='GET', name='schemes', renderer='json')
@@ -36,7 +37,7 @@ class PHCRegistry(BaseView):
         return response
 
     @view_config(request_method='GET', name='people',
-                 renderer='amnesiabbpf:phc/templates/phc_registry_list.pt')
+                 renderer='amnesiabbpf:phc/templates/registry/list.pt')
     def people(self):
         params = urlencode({
             'source': self.context.source_id,
@@ -50,7 +51,7 @@ class PHCRegistry(BaseView):
         return {'data': response}
 
     @view_config(request_method='GET', name='person',
-                 renderer='amnesiabbpf:phc/templates/phc_registry_person.pt')
+                 renderer='amnesiabbpf:phc/templates/registry/person.pt')
     def person(self):
         person_id = self.request.GET.get('id')
         url = urljoin(self.context.registry_url,
@@ -67,7 +68,7 @@ class PHCRegistry(BaseView):
         return {'person': person, 'classifications': classifications}
 
     @view_config(request_method='GET', name='cl',
-                 renderer='amnesiabbpf:phc/templates/phc_registry_cl.pt')
+                 renderer='amnesiabbpf:phc/templates/registry/cl.pt')
     def cl(self):
         person_id = self.request.GET.get('id')
         url = urljoin(self.context.registry_url,
@@ -77,7 +78,7 @@ class PHCRegistry(BaseView):
         return {'cl': classifications}
 
     @view_config(request_method='GET', name='',
-                 renderer='amnesiabbpf:phc/templates/index.pt')
+                 renderer='amnesiabbpf:phc/templates/registry/index.pt')
     def index(self):
         params = urlencode({'source_id': self.context.source_id})
         url = urljoin(self.context.registry_url,

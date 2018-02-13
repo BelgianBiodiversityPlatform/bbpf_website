@@ -42,7 +42,7 @@ class BoxRow(Widget):
             self.documents = self.dbsession.query(Document).filter(
                 Document.filter_published(),
                 Document.filter_container_id(root_id)
-            ).order_by(Document.weight.desc()).all()
+            ).order_by(Document.weight.desc()).all() # pylint: disable=no-member
         else:
             self.documents = []
 
@@ -62,7 +62,7 @@ class Slider1(Widget):
             self.files = self.dbsession.query(File).filter(
                 File.filter_published(),
                 File.filter_container_id(root_id)
-            ).order_by(File.weight.desc()).all()
+            ).order_by(File.weight.desc()).all() # pylint: disable=no-member
         else:
             self.files = []
 
