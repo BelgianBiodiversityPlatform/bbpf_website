@@ -20,7 +20,7 @@
                                 <metal:block define-slot="aside-top" />
 
                                 <div class="sidebar-box" tal:condition="content.props and content.props.get('twitter')">
-                                    ${structure: widgets.Twitter(request, content.props['twitter'])}
+                                    ${structure: widgets.twitter(request, content.props['twitter'])}
                                 </div>
 
                                 <!--!

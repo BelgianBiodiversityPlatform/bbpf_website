@@ -4,7 +4,7 @@
     <div id="main">
         <div class="container">
             <div class="row">
-                <img src="${h.gravatar(request, person['email'], 128)}" class="gravatar right" style="margin:30px" />
+                <img src="${h.gravatar(request, person['email'], size=128, default='mm')}" class="gravatar right" style="margin:30px" />
 
                 <h1 style="margin-bottom:5px;">${person['firstname']} ${person['familyname']}</h1>
                 <p class="justify italic" style="font-size: 14px; padding: 10px;">${person['activity']}</p>
