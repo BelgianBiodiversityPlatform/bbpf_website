@@ -1,0 +1,39 @@
+<metal:block use-macro="load: amnesia:templates/document/show.pt">
+    <metal:block fill-slot="head-bottom">
+    <style>
+        .navbar .navbar-nav {
+            display: inline-block;
+            float: none;
+            vertical-align: top;
+        }
+
+        .navbar .navbar-collapse {
+            text-align: center;
+        }
+
+        .inner-banner {
+            margin-bottom: 50px;
+        }
+    </style>
+    </metal:block>
+    <metal:block fill-slot="body" tal:define="settings request.registry.settings">
+        <div class="row">
+            <div class="col-md-12">
+                ${structure: widgets.tabs(request, context.entity.id, template='amnesiabbpf:phc/templates/widgets/phc_tabs.pt')}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                ${structure: widgets.slider1(request, 3950)}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <blockquote tal:condition="content.description">
+                    <p><strong>${content.description}</strong></p>
+                </blockquote>
+                ${structure: content.body}
+            </div>
+        </div>
+    </metal:block>
+</metal:block>
