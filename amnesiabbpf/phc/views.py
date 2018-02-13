@@ -29,38 +29,20 @@ class PHCRegistry(BaseView):
 
     @view_config(request_method='GET', name='schemes', renderer='json')
     def schemes(self):
-        params = urlencode({'source_id': self.context.source_id})
-        url = urljoin(self.context.registry_url,
-                      'schemes.json?{}'.format(params))
-        response = json.loads(urlopen(url).read().decode('utf-8'))
-
-        return response
+        return self.context.get_schemes()
 
     @view_config(request_method='GET', name='people',
                  renderer='amnesiabbpf:phc/templates/registry/list.pt')
     def people(self):
-        params = urlencode({
-            'source': self.context.source_id,
-            'skills[]': self.request.GET.getall('class_ids')  # needed for Rails
-        }, doseq=True)
-
-        url = urljoin(self.context.registry_url,
-                      'people/listExperts.json?{}'.format(params))
-        response = json.loads(urlopen(url).read().decode('utf-8'))
-
-        return {'data': response}
+        skills = self.request.GET.getall('class_ids')
+        people = self.context.people(skills)
+        return {'data': people}
 
     @view_config(request_method='GET', name='person',
                  renderer='amnesiabbpf:phc/templates/registry/person.pt')
     def person(self):
         person_id = self.request.GET.get('id')
-        url = urljoin(self.context.registry_url,
-                      'people/{}.json'.format(person_id))
-        person = json.loads(urlopen(url).read().decode('utf-8'))
-
-        classifications = sorted(person['person']['classifications'],
-                                 key=lambda x: x['scheme'])
-        classifications = groupby(classifications, lambda x: x['scheme'])
+        person, classifications = self.context.person(person_id)
 
         # See https://github.com/malthe/chameleon/issues/170
         classifications = ((scheme, list(cl)) for scheme, cl in classifications)
@@ -71,18 +53,11 @@ class PHCRegistry(BaseView):
                  renderer='amnesiabbpf:phc/templates/registry/cl.pt')
     def cl(self):
         person_id = self.request.GET.get('id')
-        url = urljoin(self.context.registry_url,
-                      'classifications/{}.json'.format(person_id))
-        classifications = json.loads(urlopen(url).read().decode('utf-8'))
-
-        return {'cl': classifications}
+        cl = self.context.classifications(person_id)
+        return {'cl': cl}
 
     @view_config(request_method='GET', name='',
                  renderer='amnesiabbpf:phc/templates/registry/index.pt')
     def index(self):
-        params = urlencode({'source_id': self.context.source_id})
-        url = urljoin(self.context.registry_url,
-                      'schemes.json?{}'.format(params))
-        response = json.loads(urlopen(url).read().decode('utf-8'))
-
-        return {'schemes': response}
+        schemes = self.context.get_schemes()
+        return {'schemes': schemes}

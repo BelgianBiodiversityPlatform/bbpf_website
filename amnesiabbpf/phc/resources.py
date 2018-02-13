@@ -1,14 +1,22 @@
 # -*- coding: utf-8 -*-
 
+import json
 import logging
+
+from itertools import groupby
+
+from urllib.parse import urlencode
+from urllib.parse import urljoin
+from urllib.request import urlopen
 
 from pyramid.decorator import reify
 
 from amnesia.resources import Resource
 from amnesia.modules.folder import FolderEntity
+from amnesia.modules.folder import Folder
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger(__name__) # pylint: disable=invalid-name
 
 
 class PHCResourceMixin:
@@ -51,3 +59,38 @@ class PHCRegistryResource(Resource, PHCResourceMixin):
     @property
     def __parent__(self):
         return self.parent
+
+    @property
+    def entity(self):
+        return self.dbsession.query(Folder).get(self.phc_registry_id)
+
+    def url(self, sub):
+        return urljoin(self.registry_url, sub)
+
+    def get_schemes(self):
+        params = urlencode({'source_id': self.source_id})
+        url = self.url('schemes.json?{}'.format(params))
+        return json.loads(urlopen(url).read().decode('utf-8'))
+
+    def people(self, skills):
+        params = urlencode({
+            'source': self.source_id,
+            'skills[]': skills # needed for Rails
+        }, doseq=True)
+
+        url = self.url('people/listExperts.json?{}'.format(params))
+        return json.loads(urlopen(url).read().decode('utf-8'))
+
+    def person(self, person_id):
+        url = self.url('people/{}.json'.format(person_id))
+        person = json.loads(urlopen(url).read().decode('utf-8'))
+
+        classifications = sorted(person['person']['classifications'],
+                                 key=lambda x: x['scheme'])
+        classifications = groupby(classifications, lambda x: x['scheme'])
+
+        return (person, classifications)
+
+    def classifications(self, person_id):
+        url = self.url('classifications/{}.json'.format(person_id))
+        return json.loads(urlopen(url).read().decode('utf-8'))
