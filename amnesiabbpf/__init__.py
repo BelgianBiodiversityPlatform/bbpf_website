@@ -21,6 +21,10 @@ class BBPFRoot(Root, PHCResourceMixin):
         # Public health
         if path == self.phc_root_id:
             phc_folder = self.dbsession.query(Folder).get(self.phc_root_id)
+
+            if not phc_folder:
+                raise KeyError
+
             return PHCResource(self.request, phc_folder, self)
 
         # Public health registry
