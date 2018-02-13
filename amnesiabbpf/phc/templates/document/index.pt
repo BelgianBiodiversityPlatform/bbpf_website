@@ -1,4 +1,4 @@
-<metal:block use-macro="load: amnesia:templates/document/show.pt">
+<metal:block use-macro="load: amnesiabbpf:templates/document/show.pt">
     <metal:block fill-slot="head-bottom">
     <style>
         .navbar .navbar-nav {

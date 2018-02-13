@@ -1,4 +1,4 @@
-<metal:block use-macro="load: amnesia:templates/layout.pt">
+<metal:block use-macro="load: amnesiabbpf:templates/layout.pt" tal:define="content context.entity">
 <metal:block fill-slot="title_more">: Registry</metal:block>
 <metal:block fill-slot="head-bottom">
     <script type="text/javascript">
@@ -205,6 +205,11 @@
 <metal:block fill-slot="content">
     <div id="main">
         <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    ${structure: widgets.tabs(request, int(context.phc_root_id), template='amnesiabbpf:phc/templates/widgets/phc_tabs.pt')}
+                </div>
+            </div>
             <div class="row">
                 <!--
                 <ul>
