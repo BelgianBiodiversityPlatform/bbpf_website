@@ -45,6 +45,8 @@ class PHCResource(FolderEntity, PHCResourceMixin):
 
 
 class PHCRegistryResource(Resource, PHCResourceMixin):
+    '''Public Health registry resource, which query the BeCRIS (old BioBel
+    database)'''
 
     def __init__(self, request, parent):
         super().__init__(request)

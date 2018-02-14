@@ -22,7 +22,7 @@
                 ${structure: widgets.tabs(request, context.entity.id, template='amnesiabbpf:phc/templates/widgets/phc_tabs.pt')}
             </div>
         </div>
-        <div class="row">
+        <div class="row" style="margin-top:20px">
             <div class="col-md-12">
                 ${structure: widgets.slider1(request, 3950)}
             </div>

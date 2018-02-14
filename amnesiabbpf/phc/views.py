@@ -53,8 +53,8 @@ class PHCRegistry(BaseView):
                  renderer='amnesiabbpf:phc/templates/registry/cl.pt')
     def cl(self):
         person_id = self.request.GET.get('id')
-        cl = self.context.classifications(person_id)
-        return {'cl': cl}
+        classifications = self.context.classifications(person_id)
+        return {'cl': classifications}
 
     @view_config(request_method='GET', name='',
                  renderer='amnesiabbpf:phc/templates/registry/index.pt')

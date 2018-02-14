@@ -1,28 +1,58 @@
-<metal:block use-macro="load: amnesia:templates/layout.pt">
+<metal:block use-macro="load: amnesia:templates/layout.pt" tal:define="content context.entity">
 <metal:block fill-slot="title_more">: Registry</metal:block>
+<metal:block fill-slot="head-bottom">
+    <style>
+        .navbar .navbar-nav {
+            display: inline-block;
+            float: none;
+            vertical-align: top;
+        }
+
+        .navbar .navbar-collapse {
+            text-align: center;
+        }
+
+        .inner-banner {
+            margin-bottom: 50px;
+        }
+    </style>
+</metal:block>
+
 <metal:block fill-slot="content" tal:define="person person['person']">
     <div id="main">
         <div class="container">
             <div class="row">
-                <img src="${h.gravatar(request, person['email'], size=128, default='mm')}" class="gravatar right" style="margin:30px" />
-
-                <h1 style="margin-bottom:5px;">${person['firstname']} ${person['familyname']}</h1>
+                <div class="col-md-12">
+                    ${structure: widgets.tabs(request, int(context.phc_root_id), template='amnesiabbpf:phc/templates/widgets/phc_tabs.pt')}
+                </div>
+            </div>
+            <hr />
+            <div class="row" style="margin-top:20px;background-color:#eee;padding:20px">
+               <div class="col-md-10">
+                    <h2>${person['firstname']} ${person['familyname']}</h2>
+                    <ul class="list-unstyled">
+                        <li tal:condition="person['researchgateid']">
+                            <a href="${person['researchgateid']}">ResearchGate</a>
+                        </li>
+                        <li tal:condition="person['orcid']">
+                            <a href="${person['orcid']}">OrcID</a>
+                        </li>
+                        <li>
+                            <a href="mailto:${person['email']}">E-Mail</a>
+                        </li>
+                    </ul>
+                </div>
+               <div class="col-md-2">
+                    <img src="${h.gravatar(request, person['email'], size=128, default='mm')}" class="img-thumbnail"/>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
                 <p class="justify italic" style="font-size: 14px; padding: 10px;">${person['activity']}</p>
 
-                <ul class="nospace academics">
-                    <li tal:condition="person['researchgateid']">
-                        <a href="${person['researchgateid']}"><i class="ai ai-researchgate-square fa-2x"></i> ResearchGate</a>
-                    </li>
-                    <li tal:condition="person['orcid']">
-                        <a href="${person['orcid']}"><i class="ai ai-orcid-square fa-2x"></i> OrcID</a>
-                    </li>
-                    <li>
-                        <a href="mailto:${person['email']}"><i class="fa fa-envelope fa-2x"></i>E-Mail</a>
-                    </li>
-                </ul>
 
                 <div tal:condition="person['orgunits']">
-                    <h2>Affiliation</h2>
+                    <h4>Affiliation</h4>
                     <ul>
                         <li tal:repeat="orgunit person['orgunits']">
                             <p>${orgunit['name']}</p>
@@ -35,9 +65,9 @@
                 </div>
 
                 <div tal:condition="classifications">
-                    <h2>Expertise</h2>
+                    <h4>Expertise</h4>
                     <p tal:repeat="(sc, cl) classifications">
-                        <span class="bold">${sc}</span>
+                        <strong>${sc}</strong>
                         <ul>
                             <li tal:repeat="cll cl">
                                 <a href="${request.resource_path(context, 'cl', query={'id': cll['id']})}">${cll['term']}</a>

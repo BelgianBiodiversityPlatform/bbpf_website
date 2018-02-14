@@ -1,20 +1,48 @@
-<metal:block use-macro="load: amnesia:templates/layout.pt">
+<metal:block use-macro="load: amnesia:templates/layout.pt" tal:define="content context.entity">
+<metal:block fill-slot="head-bottom">
+    <style>
+        .navbar .navbar-nav {
+            display: inline-block;
+            float: none;
+            vertical-align: top;
+        }
+
+        .navbar .navbar-collapse {
+            text-align: center;
+        }
+
+        .inner-banner {
+            margin-bottom: 50px;
+        }
+    </style>
+</metal:block>
 <metal:block fill-slot="content" tal:define="cl cl['classpeople']">
     <div id="main">
     <div class="container">
         <div class="row">
-        <h1>${cl.term}</h1>
-        
-        <h2>People</h2>
-        <p>People with <strong>${cl.term}</strong> expertise</p>
-        <div tal:repeat="person cl['experts']">
-            <div>
-                <a href="${'{}/registry/person/{}'.format(request.script_name, person['id'])}"><img src="${h.gravatar(request, person['email'], 96)}" /></a>
-            </div>
-            <div>
-                <div>${person['firstname']} ${person['familyname']}</div>
+            <div class="col-md-12">
+                ${structure: widgets.tabs(request, int(context.phc_root_id), template='amnesiabbpf:phc/templates/widgets/phc_tabs.pt')}
             </div>
         </div>
+        <div class="row" style="margin-top:20px;background-color:#eee;padding:20px">
+            <div class="col-md-12">
+                <h3>
+                    <i class="fa fa-street-view"></i>
+                    Experts with <strong>${cl.term}</strong> expertise
+                </h3>
+            </div>
+        </div>
+        <div class="row" style="margin-top:20px">
+          <div tal:repeat="person cl['experts']" class="col-sm-6 col-md-4">
+            <div class="thumbnail">
+                <a href="${request.resource_path(context, 'person', query={'id':person['id']})}"><img src="${h.gravatar(request, person['email'], size=96, default='mm')}" class="img-circle" /></a>
+              <div class="caption">
+                <h3 class="text-center">
+                    <a href="${request.resource_path(context, 'person', query={'id':person['id']})}"> ${person['firstname']} ${person['familyname']}</a>
+                </h3>
+              </div>
+            </div>
+          </div>
         </div>
     </div>
     </div>
